@@ -11,7 +11,15 @@ import java.util.Date;
 @Setter
 public class Member {
 
-    @Id
+    //== 기본키 매핑 ==
+    //@Id만 쓰면 직접할당
+    //@GeneratedValue 자동생성 AUTO면 DB방언에 맞춰서 자동생성. IDENTITY는 기본키 생성을 데이터베이스에 위임. ex)MySQL의 Auto_increment
+    //IDENTITY전략은 id값이 null일때 아이디값을 생성하는데 영속성 컨텍스트에 들어가려면 아이디 값이 있어야한다.
+    //insert쿼리를 날려봐야 id값을 알수있기때문에 이 경우에는(IDENTITY전략일 경우) em.persist(member)를 하면 insert쿼리가 날라나게되고,
+    //아이디값을 가져와서 영속성컨텍스트에서 pk값으로 쓰게 된다.
+    //한트랜잭션 안에서 버퍼링해서 write하는게 그렇게 성능에 이점이 있지 않아서 괜찮다고 함.
+    //다른 전략은 커밋하는 시점에 insert쿼리가 날라감.
+    @Id @GeneratedValue
     private Long id;
 
     //== Column옵션 ==
@@ -32,15 +40,21 @@ public class Member {
     //@Transient  //DB와 상관없이 메모리에서만 사용하고 싶을때 임시로 어떤 값을 보관하고 싶을때 사용. (DB저장 X, 조회 X, 필드매핑 X)
     @Column(name = "name", updatable = false)
     private String username;
+
     private Integer age;
+
     @Enumerated(EnumType.STRING)
     private RoleType roleType;
+
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
+
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastModifiedDate;
+
     @Lob
     private String description;
+
     @Transient
     private int temp;
 
