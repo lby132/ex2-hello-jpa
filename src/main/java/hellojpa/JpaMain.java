@@ -1,5 +1,7 @@
 package hellojpa;
 
+import org.hibernate.Hibernate;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -17,26 +19,32 @@ public class JpaMain {
         tx.begin();
 
         try {
-            final Team team = new Team();
-            team.setName("teamA");
-            em.persist(team);
 
-            final Member2 member = new Member2();
-            member.setUsername("member1");
-            member.changeTeam(team);
-            em.persist(member);
+            final Member2 member2 = new Member2();
+            member2.setUsername("member1");
+            member2.setHomeAddress(new Address("2", "3", "4"));
 
-            //team.addMember(member);
+            member2.getFavoriteFoods().add("치킨");
+            member2.getFavoriteFoods().add("족발");
+
+            member2.getAddressHistory().add(new Address("ol1", "sdd", "22"));
+            member2.getAddressHistory().add(new Address("ol2", "sdd", "33"));
+
+            em.persist(member2);
 
             em.flush();
             em.clear();
 
-            final Member2 findMember = em.find(Member2.class, member.getId());
-            final List<Member2> members = findMember.getTeam().getMembers();
+            System.out.println("==================START===================");
+            final Member2 findMember = em.find(Member2.class, member2.getId());
+//            final Address a = findMember.getHomeAddress();
+//            findMember.setHomeAddress(new Address("newCity", a.getStreet(), a.getZipcode()));
+//
+//            findMember.getFavoriteFoods().remove("치킨");
+//            findMember.getFavoriteFoods().add("한식");
 
-            for (Member2 m : members) {
-                System.out.println("m.getUsername() = " + m.getUsername());
-            }
+            findMember.getAddressHistory().remove(new Address("old1", "street", "10000"));
+            findMember.getAddressHistory().add(new Address("newCity1", "street", "10000"));
 
             tx.commit();
         } catch (Exception e) {
